@@ -8,13 +8,40 @@ var handleDomo = function handleDomo(e) {
 	$("#domoMessage").animate({ width: 'hide' }, 350);
 
 	//Handle invalid input
-	if ($("#domoName").val() == '' || $("#domoAge").val() == '') {
+	if ($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoAbility").val() == '') {
 		handleError("RAWR! All fields are required");
 		return false;
 	}
 
 	//Send the AJAX request
 	sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), function () {
+		loadDomosFromServer();
+	});
+
+	//Prevent the form from changing pages
+	return false;
+};
+
+//Function to send an AJAX request when a user deletes a domo
+var deleteDomo = function deleteDomo(e) {
+	//Prevent the form from submitting
+	e.preventDefault();
+
+	$("#domoMessage").animate({ width: 'hide' }, 350);
+
+	//Handle invalid input
+	if ($("#domoName2").val() == '') {
+		handleError("RAWR! Name is required");
+		return false;
+	}
+
+	//Send the AJAX request
+	sendAjax('DELETE', $("#deleteDomoForm").attr("action"), $("#deleteDomoForm").serialize(), function (err) {
+		if (err.error) {
+			handleError(err.error);
+			return false;
+		}
+
 		loadDomosFromServer();
 	});
 
@@ -43,8 +70,34 @@ var DomoForm = function DomoForm(props) {
 			"Age: "
 		),
 		React.createElement("input", { id: "domoAge", type: "text", name: "age", placeholder: "Domo Age" }),
+		React.createElement(
+			"label",
+			{ htmlFor: "ability" },
+			"Ability: "
+		),
+		React.createElement("input", { id: "domoAbility", type: "text", name: "ability", placeholder: "Domo Ability" }),
 		React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
 		React.createElement("input", { className: "makeDomoSubmit", type: "submit", value: "Make Domo" })
+	);
+};
+
+//Function to use React to dynamically create the delete domo form
+var DeleteDomoForm = function DeleteDomoForm(props) {
+	return React.createElement(
+		"form",
+		{ id: "deleteDomoForm", name: "deleteDomoForm",
+			onSubmit: deleteDomo,
+			action: "/removeDomo",
+			method: "DELETE",
+			className: "deleteDomoForm" },
+		React.createElement(
+			"label",
+			{ htmlFor: "name2" },
+			"Name: "
+		),
+		React.createElement("input", { id: "domoName2", type: "text", name: "name2", placeholder: "Domo Name" }),
+		React.createElement("input", { type: "hidden", name: "_csrf", value: props.csrf }),
+		React.createElement("input", { className: "removeDomoSubmit", type: "submit", value: "Delete Domo" })
 	);
 };
 
@@ -82,6 +135,13 @@ var DomoList = function DomoList(props) {
 				" Age: ",
 				domo.age,
 				" "
+			),
+			React.createElement(
+				"h3",
+				{ className: "domoAbility" },
+				" Ability: ",
+				domo.ability,
+				" "
 			)
 		);
 	});
@@ -106,6 +166,9 @@ var loadDomosFromServer = function loadDomosFromServer() {
 var setup = function setup(csrf) {
 	//Render domo form
 	ReactDOM.render(React.createElement(DomoForm, { csrf: csrf }), document.querySelector("#makeDomo"));
+
+	//Render delete domo form
+	ReactDOM.render(React.createElement(DeleteDomoForm, { csrf: csrf }), document.querySelector("#deleteDomo"));
 
 	//Render default domo list (empty array)
 	ReactDOM.render(React.createElement(DomoList, { domos: [] }), document.querySelector("#domos"));
@@ -142,14 +205,16 @@ var redirect = function redirect(response) {
 };
 
 //Function to send an AJAX request to the server
-var sendAjax = function sendAjax(type, action, data, success) {
+var sendAjax = function sendAjax(type, action, data, _success) {
 	$.ajax({
 		cache: false,
 		type: type,
 		url: action,
 		data: data,
 		dataType: "json",
-		success: success,
+		success: function success(json) {
+			_success(json);
+		},
 		error: function error(xhr, status, _error) {
 			var messageObj = JSON.parse(xhr.responseText);
 			handleError(messageObj.error);

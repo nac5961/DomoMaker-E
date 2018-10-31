@@ -14,6 +14,10 @@ html, body {
     border-radius: 8px;
 }
 
+#domoForm {
+	margin-bottom: 0;
+}
+
 nav {
     width: 100%;
     height: 50px;
@@ -47,10 +51,10 @@ nav:nth-child(1) {
     background-color: #66bdff;
 }
 
-.domoForm {
+.domoForm, .deleteDomoForm {
     border: 2px solid #338acc;
     height: 35px;
-    width: 700px;
+    width: 900px;
     margin-top:0px;
     padding-top:10px;
     background-color: #55acee;
@@ -58,7 +62,7 @@ nav:nth-child(1) {
     border-top-right-radius: 4px;
 }
 
-.domoForm label {
+.domoForm label, .deleteDomoForm label {
     display: inline-block;
     width: 75px;
     margin-left: 10px;
@@ -67,11 +71,11 @@ nav:nth-child(1) {
     color: white;
 }
 
-.domoForm input[type=text] {
+.domoForm input[type=text], .deleteDomoForm input[type=text] {
     float:left;
 }
 
-.makeDomoSubmit {
+.makeDomoSubmit, .removeDomoSubmit {
     transition: background-color 0.4s ease;
     display: inline;
     width: 90px;
@@ -81,11 +85,12 @@ nav:nth-child(1) {
     text-decoration: none;
 }
 
-.makeDomoSubmit:link, .makeDomoSubmit:visited, .makeDomoSubmit:hover, .makeDomoSubmit:active {
+.makeDomoSubmit:link, .makeDomoSubmit:visited, .makeDomoSubmit:hover, .makeDomoSubmit:active,
+.removeDomoSubmit:link, .removeDomoSubmit:visited, .removeDomoSubmit:hover, .removeDomoSubmit:active {
     color: white;
 }
 
-.makeDomoSubmit:hover {
+.makeDomoSubmit:hover, .removeDomoSubmit:hover {
     transition: background-color 0.4s ease;
     background-color: #338acc;
 }
@@ -236,22 +241,31 @@ h3.emptyDomo {
     margin-top: 18px;
 }
 
-h3.domoName {
-    float:left;
+h3.domoName, h3.domoAge, h3.domoAbility {
+    float:right;
     width: 200px;
     font-weight: bold;
     padding-left: 65px;
     font-size: 1.5em;
 }
 
+/*
 h3.domoAge {
-    float:right;
-    text-align: left;
+    float:left;
+    text-align: center;
     width: 100px;
     font-weight: bold;
     padding-right: 40px;
     font-size: 1.5em;
 }
+
+h3.domoAbility {
+	float:left;
+	width: 200px;
+	font-weight: bold;
+	padding
+}
+*/
 
 .domo:first-child {
     margin-top: 10px;

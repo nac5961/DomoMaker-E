@@ -21,14 +21,15 @@ const makerPage = (req, res) => {
 // Function to create a domo
 const makeDomo = (req, res) => {
 	// Validate data
-  if (!req.body.name || !req.body.age) {
-    return res.status(400).json({ error: 'RAWR! Both name and age are required' });
+  if (!req.body.name || !req.body.age || !req.body.ability) {
+    return res.status(400).json({ error: 'RAWR! All fields are required' });
   }
 
 	// Create data to save to the database
   const domoData = {
     name: req.body.name,
     age: req.body.age,
+    ability: req.body.ability,
     owner: req.session.account._id,
   };
 
@@ -74,9 +75,39 @@ const getDomos = (request, response) => {
   });
 };
 
+// Function to remove a domo
+const removeDomo = (req, res) => {
+	// Validate data
+  if (!req.body.name2) {
+    return res.status(400).json({ error: 'RAWR! Name is required' });
+  }
+
+  return Domo.DomoModel.findAllByName(req.body.name2, req.session.account._id, (err, docs) => {
+	// Process errors
+    if (err) {
+      console.log(err);
+      return res.status(400).json({ error: 'An error occurred' });
+    }	else if (!docs || docs.length === 0) {
+      return res.json({ error: 'No domos were found with that name' });
+    }
+
+    return Domo.DomoModel.deleteAllByName(req.body.name2, req.session.account._id, (err2) => {
+		// Process errors
+      if (err2) {
+        console.log(err2);
+        return res.status(400).json({ error: 'An error occurred' });
+      }
+
+		// Send a successful response
+      return res.json({ message: 'Successfully deleted domos' });
+    });
+  });
+};
+
 // Export functions
 module.exports = {
   makerPage,
   make: makeDomo,
   getDomos,
+  remove: removeDomo,
 };

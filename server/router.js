@@ -16,6 +16,9 @@ const router = (app) => {
   app.post('/login', mid.requiresSecure, mid.requiresLogout, controllers.Account.login);
   app.post('/signup', mid.requiresSecure, mid.requiresLogout, controllers.Account.signup);
   app.post('/maker', mid.requiresLogin, controllers.Domo.make);
+
+  // DELETE
+  app.delete('/removeDomo', mid.requiresLogin, controllers.Domo.remove);
 };
 
 // Export the function to use in app.js

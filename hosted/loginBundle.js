@@ -169,14 +169,16 @@ var redirect = function redirect(response) {
 };
 
 //Function to send an AJAX request to the server
-var sendAjax = function sendAjax(type, action, data, success) {
+var sendAjax = function sendAjax(type, action, data, _success) {
 	$.ajax({
 		cache: false,
 		type: type,
 		url: action,
 		data: data,
 		dataType: "json",
-		success: success,
+		success: function success(json) {
+			_success(json);
+		},
 		error: function error(xhr, status, _error) {
 			var messageObj = JSON.parse(xhr.responseText);
 			handleError(messageObj.error);

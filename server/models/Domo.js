@@ -26,6 +26,12 @@ const DomoSchema = new mongoose.Schema({
     min: 0,
     required: true,
   },
+  ability: {
+    type: String,
+    required: true,
+    trim: true,
+    set: setName,
+  },
   owner: {
     type: mongoose.Schema.ObjectId,
     required: true,
@@ -41,6 +47,7 @@ const DomoSchema = new mongoose.Schema({
 DomoSchema.statics.toAPI = (doc) => ({
   name: doc.name,
   age: doc.age,
+  ability: doc.ability,
 });
 
 // Function to find a domo by its owner
@@ -51,7 +58,31 @@ DomoSchema.statics.findByOwner = (ownerId, callback) => {
   };
 
 	// Perform the search
-  return DomoModel.find(search).select('name age').exec(callback);
+  return DomoModel.find(search).select('name age ability').exec(callback);
+};
+
+// Function to delete a domo by its name
+DomoSchema.statics.deleteAllByName = (name, ownerId, callback) => {
+	// Object to use for searching
+  const search = {
+    name,
+    owner: convertId(ownerId),
+  };
+
+  // Perform the delete
+  return DomoModel.deleteMany(search, callback);
+};
+
+// Function to find domos by its name
+DomoSchema.statics.findAllByName = (name, ownerId, callback) => {
+	// Object to use for searching
+  const search = {
+    name,
+    owner: convertId(ownerId),
+  };
+
+  // Perform the search
+  return DomoModel.find(search, callback);
 };
 
 // Setup the model

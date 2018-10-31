@@ -6,13 +6,40 @@ const handleDomo = (e) => {
 	$("#domoMessage").animate({width:'hide'},350);
 	
 	//Handle invalid input
-	if ($("#domoName").val() == '' || $("#domoAge").val() == ''){
+	if ($("#domoName").val() == '' || $("#domoAge").val() == '' || $("#domoAbility").val() == ''){
 		handleError("RAWR! All fields are required");
 		return false;
 	}
 	
 	//Send the AJAX request
 	sendAjax('POST', $("#domoForm").attr("action"), $("#domoForm").serialize(), function(){
+		loadDomosFromServer();
+	});
+	
+	//Prevent the form from changing pages
+	return false;
+};
+
+//Function to send an AJAX request when a user deletes a domo
+const deleteDomo = (e) => {
+	//Prevent the form from submitting
+	e.preventDefault();
+	
+	$("#domoMessage").animate({width:'hide'},350);
+	
+	//Handle invalid input
+	if ($("#domoName2").val() == ''){
+		handleError("RAWR! Name is required");
+		return false;
+	}
+	
+	//Send the AJAX request
+	sendAjax('DELETE', $("#deleteDomoForm").attr("action"), $("#deleteDomoForm").serialize(), function(err){
+		if (err.error){
+			handleError(err.error);
+			return false;
+		}
+		
 		loadDomosFromServer();
 	});
 	
@@ -32,8 +59,26 @@ const DomoForm = (props) => {
 			<input id="domoName" type="text" name="name" placeholder="Domo Name" />
 			<label htmlFor="age">Age: </label>
 			<input id="domoAge" type="text" name="age" placeholder="Domo Age" />
+			<label htmlFor="ability">Ability: </label>
+			<input id="domoAbility" type="text" name="ability" placeholder="Domo Ability" />
 			<input type="hidden" name="_csrf" value={props.csrf} />
 			<input className="makeDomoSubmit" type="submit" value="Make Domo" />
+		</form>
+	);
+};
+
+//Function to use React to dynamically create the delete domo form
+const DeleteDomoForm = (props) => {
+	return(
+		<form id="deleteDomoForm" name="deleteDomoForm"
+			onSubmit={deleteDomo}
+			action="/removeDomo"
+			method="DELETE"
+			className="deleteDomoForm">
+			<label htmlFor="name2">Name: </label>
+			<input id="domoName2" type="text" name="name2" placeholder="Domo Name" />
+			<input type="hidden" name="_csrf" value={props.csrf} />
+			<input className="removeDomoSubmit" type="submit" value="Delete Domo" />
 		</form>
 	);
 };
@@ -56,6 +101,7 @@ const DomoList = function(props){
 				<img src="/assets/img/domoface.jpeg" alt="domo face" className="domoFace" />
 				<h3 className="domoName"> Name: {domo.name} </h3>
 				<h3 className="domoAge"> Age: {domo.age} </h3>
+				<h3 className="domoAbility"> Ability: {domo.ability} </h3>
 			</div>
 		);
 	});
@@ -85,6 +131,12 @@ const setup = function(csrf){
 	ReactDOM.render(
 		<DomoForm csrf={csrf} />,
 		document.querySelector("#makeDomo")
+	);
+	
+	//Render delete domo form
+	ReactDOM.render(
+		<DeleteDomoForm csrf={csrf} />,
+		document.querySelector("#deleteDomo")
 	);
 	
 	//Render default domo list (empty array)
